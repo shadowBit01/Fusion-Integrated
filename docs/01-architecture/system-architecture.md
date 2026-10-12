@@ -185,7 +185,7 @@ modules/
   academics/       read-only ACL over the ERP + declaration snapshots
   placement/       ┐
   hr/              ├ bounded contexts
-  leave/           ┘
+  elm/             ┘
 ```
 
 Every module has the same five layers — `domain/` (pure Python, no Django), `models.py`,

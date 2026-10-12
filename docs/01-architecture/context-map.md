@@ -56,7 +56,7 @@ do on the other.
 | **Academics** | `modules/academics` | What is this student's *declared* academic standing? |
 | **Placement** | `modules/placement` | Companies, postings, eligibility, applications, rounds, offers, records, statistics |
 | **HR** | `modules/hr` | Employees, appointments, employment status |
-| **Leave** | `modules/leave` | Leave types, balances, requests, approvals |
+| **ELM** | `modules/elm` | Leave types, balances, requests, approvals |
 | **Legacy ERP** | the monolith | Everything academic. Authoritative and untouched. |
 | **Sysops** | `services/sysops` (Phase 7) | Backups, archives, batch onboarding, schema operations |
 

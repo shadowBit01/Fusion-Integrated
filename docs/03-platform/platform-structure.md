@@ -49,7 +49,7 @@ Fusion-Integrated/
 │       │   ├── academics/
 │       │   ├── placement/
 │       │   ├── hr/
-│       │   └── leave/
+│       │   └── elm/
 │       └── openapi/platform.v1.yaml    ← committed; CI diffs it
 └── .github/workflows/{backend.yml, security.yml, deploy.yml}
 ```
@@ -147,7 +147,7 @@ type = forbidden
 source_modules =
     modules.placement
     modules.hr
-    modules.leave
+    modules.elm
     modules.academics
     modules.directory
 forbidden_modules =
@@ -181,7 +181,7 @@ layers =
 [importlinter:contract:erp-shadow-is-contained]
 name = ERP shadow models live only in modules/academics/erp
 type = forbidden
-source_modules = modules.placement, modules.hr, modules.leave, modules.directory, core
+source_modules = modules.placement, modules.hr, modules.elm, modules.directory, core
 forbidden_modules = modules.academics.erp
 
 [importlinter:contract:core-is-a-leaf]

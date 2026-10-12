@@ -34,7 +34,7 @@ fusion-frontend/
 │   │   │   ├── registry.ts
 │   │   │   ├── dashboard/{manifest.ts, routes.tsx, pages/}
 │   │   │   ├── placement/{manifest.ts, routes.tsx, pages/, components/, hooks/, api/, utils/}
-│   │   │   ├── hr/  leave/  profile/
+│   │   │   ├── hr/  elm/  profile/
 │   │   │   └── sysops/{manifest.ts, routes.tsx, pages/}       ← Phase 7
 │   │   ├── pages/{Login/, NotFound.tsx, Forbidden.tsx, ServerError.tsx}
 │   │   ├── providers/{QueryProvider.tsx, ThemeProvider.tsx}
