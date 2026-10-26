@@ -127,6 +127,35 @@ class LeaveRequest(models.Model):
             return False  # Half-day CL on same date in different halves is allowed
         
         return True
+    
+    def cancel_and_restore_balance(self):
+        """Cancel approved leave and restore balance before start_date."""
+        from django.db import transaction
+        
+        @transaction.atomic
+        def _cancel():
+            if self.status != 'approved':
+                raise ValueError("Only approved requests can be cancelled")
+            
+            # Check if leave has started
+            today = date.today()
+            if today >= self.start_date:
+                raise ValueError("Cannot cancel after leave start date")
+            
+            # Restore balance
+            balance, _ = LeaveBalance.objects.get_or_create(
+                user=self.user,
+                leave_type=self.leave_type
+            )
+            
+            balance.consumed_days -= self.total_days
+            balance.save()
+            
+            # Mark as cancelled
+            self.status = 'cancelled'
+            self.save()
+        
+        _cancel()
 
 
 class LeaveWorkflowHistory(models.Model):

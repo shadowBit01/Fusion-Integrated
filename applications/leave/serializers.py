@@ -45,8 +45,30 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
         """Validate leave request before saving."""
         user = data['user']
         leave_type = data['leave_type']
-        start_date = data['start_date']
-        end_date = data['end_date']
+        start_date_str = data.get('start_date')
+        end_date_str = data.get('end_date')
+        
+        # Handle date string inputs - convert to date objects for comparison
+        from datetime import datetime
+        if isinstance(start_date_str, str):
+            try:
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                raise serializers.ValidationError({
+                    'start_date': "Invalid date format. Use YYYY-MM-DD."
+                })
+        else:
+            start_date = start_date_str
+        
+        if isinstance(end_date_str, str):
+            try:
+                end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                raise serializers.ValidationError({
+                    'end_date': "Invalid date format. Use YYYY-MM-DD."
+                })
+        else:
+            end_date = end_date_str
         
         # Ensure start date is not after end date
         if start_date > end_date:
@@ -55,8 +77,7 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
             })
         
         # Check for overlapping leave periods
-        from .models import LeaveRequest as LR
-        active_requests = LR.objects.filter(
+        active_requests = LeaveRequest.objects.filter(
             user=user,
             status__in=['submitted', 'unit_head_review', 'establishment_review', 
                         'final_decision_pending', 'approved'],
@@ -104,3 +125,37 @@ class LeaveActionSerializer(serializers.Serializer):
             })
         
         return data
+
+
+class LeavePermissionCheckMixin:
+    """Mixin to check Fusion IAM permissions for reviewer actions."""
+    
+    def check_permission(self, user, permission_code):
+        """Check if user has the required permission."""
+        from rest_framework.permissions import IsAuthenticated
+        from fusion_auth.permissions import HasPermission
+        
+        # Check if user is authenticated
+        if not self.context.get('request'):
+            return False
+        
+        request = self.context['request']
+        
+        # Use Fusion IAM permission checking
+        try:
+            has_perm = HasPermission(permission_code)(request.user)
+            return has_perm
+        except Exception:
+            # Fallback to basic check if Fusion auth not available
+            return user.is_authenticated
+    
+    def get_required_permission(self, action):
+        """Get required permission code for an action."""
+        permissions = {
+            'approve': 'leave_request.approve',
+            'reject': 'leave_request.reject',
+            'forward': 'leave_request.forward',
+            'cancel': 'leave_request.cancel',
+            'view': 'leave_request.view'
+        }
+        return permissions.get(action, 'leave_request.view')
